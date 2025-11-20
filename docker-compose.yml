@@ -38,6 +38,7 @@ services:
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
       - .:/app
+      - ./uploads:/app/uploads
     ports:
       - "8000:8000"
     environment:
@@ -45,6 +46,9 @@ services:
       REDIS_URL: redis://redis:6379/0
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/0
+      SECRET_KEY: dev-secret-key-for-docker
+      DEBUG: "True"
+      ALLOWED_ORIGINS: http://localhost:8000,http://127.0.0.1:8000
     depends_on:
       db:
         condition: service_healthy
@@ -59,11 +63,13 @@ services:
     command: celery -A app.celery_app worker --loglevel=info --concurrency=2
     volumes:
       - .:/app
+      - ./uploads:/app/uploads
     environment:
       DATABASE_URL: postgresql://postgres:postgres@db:5432/product_importer
       REDIS_URL: redis://redis:6379/0
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/0
+      SECRET_KEY: dev-secret-key-for-docker
     depends_on:
       db:
         condition: service_healthy
