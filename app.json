@@ -1,0 +1,49 @@
+{
+  "name": "Product Importer",
+  "description": "A scalable product import system for CSV files with real-time progress tracking",
+  "repository": "https://github.com/yourusername/product-importer",
+  "keywords": ["python", "fastapi", "celery", "postgresql", "redis", "csv"],
+  "success_url": "/",
+  "env": {
+    "SECRET_KEY": {
+      "description": "Secret key for session management",
+      "generator": "secret"
+    },
+    "DEBUG": {
+      "description": "Enable debug mode",
+      "value": "False"
+    },
+    "ALLOWED_ORIGINS": {
+      "description": "Comma-separated list of allowed CORS origins",
+      "value": "https://yourapp.herokuapp.com"
+    },
+    "MAX_UPLOAD_SIZE": {
+      "description": "Maximum file upload size in bytes",
+      "value": "104857600"
+    },
+    "BATCH_SIZE": {
+      "description": "Number of records to process in each batch",
+      "value": "1000"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    },
+    "worker": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  },
+  "addons": [
+    "heroku-postgresql:mini",
+    "heroku-redis:mini"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ]
+}
+

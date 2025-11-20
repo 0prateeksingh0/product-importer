@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Importer - Acme Inc.</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 Product Importer</h1>
+            <p class="subtitle">Acme Inc. - Efficient Product Management System</p>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="import">📤 Import Products</button>
+            <button class="tab-btn" data-tab="products">📦 Manage Products</button>
+            <button class="tab-btn" data-tab="webhooks">🔗 Webhooks</button>
+        </div>
+
+        <!-- Import Tab -->
+        <div class="tab-content active" id="import-tab">
+            <div class="card">
+                <h2>Upload CSV File</h2>
+                <p class="info">Upload a CSV file with columns: <code>sku</code>, <code>name</code>, <code>description</code> (optional), <code>price</code> (optional)</p>
+                
+                <div class="upload-area" id="uploadArea">
+                    <input type="file" id="csvFile" accept=".csv" hidden>
+                    <label for="csvFile" class="upload-label">
+                        <span class="upload-icon">📁</span>
+                        <span>Click to select CSV file or drag & drop</span>
+                        <span class="file-info">Maximum 500,000 records</span>
+                    </label>
+                </div>
+
+                <div id="uploadProgress" class="progress-container" style="display: none;">
+                    <h3>Import Progress</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressBar"></div>
+                    </div>
+                    <div class="progress-info">
+                        <span id="progressText">0%</span>
+                        <span id="progressDetails">Preparing...</span>
+                    </div>
+                    <div class="progress-stats" id="progressStats"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Tab -->
+        <div class="tab-content" id="products-tab">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Product Management</h2>
+                    <div class="actions">
+                        <button class="btn btn-primary" id="addProductBtn">➕ Add Product</button>
+                        <button class="btn btn-danger" id="bulkDeleteBtn">🗑️ Delete All</button>
+                    </div>
+                </div>
+
+                <!-- Search and Filters -->
+                <div class="filters">
+                    <input type="text" id="searchInput" placeholder="🔍 Search by SKU, name, or description..." class="search-input">
+                    <select id="activeFilter" class="filter-select">
+                        <option value="">All Products</option>
+                        <option value="true">Active Only</option>
+                        <option value="false">Inactive Only</option>
+                    </select>
+                </div>
+
+                <!-- Products Table -->
+                <div class="table-container">
+                    <table class="products-table" id="productsTable">
+                        <thead>
+                            <tr>
+                                <th>SKU</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTableBody">
+                            <tr>
+                                <td colspan="6" class="loading">Loading products...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination" id="pagination"></div>
+            </div>
+        </div>
+
+        <!-- Webhooks Tab -->
+        <div class="tab-content" id="webhooks-tab">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Webhook Configuration</h2>
+                    <button class="btn btn-primary" id="addWebhookBtn">➕ Add Webhook</button>
+                </div>
+
+                <div class="webhooks-list" id="webhooksList">
+                    <p class="loading">Loading webhooks...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="productModalTitle">Add Product</h3>
+                <button class="close-btn" id="closeProductModal">&times;</button>
+            </div>
+            <form id="productForm">
+                <div class="form-group">
+                    <label for="productSku">SKU *</label>
+                    <input type="text" id="productSku" required>
+                </div>
+                <div class="form-group">
+                    <label for="productName">Name *</label>
+                    <input type="text" id="productName" required>
+                </div>
+                <div class="form-group">
+                    <label for="productDescription">Description</label>
+                    <textarea id="productDescription" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="productPrice">Price</label>
+                    <input type="text" id="productPrice">
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="productActive" checked>
+                        Active
+                    </label>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelProductBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveProductBtn">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Webhook Modal -->
+    <div class="modal" id="webhookModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="webhookModalTitle">Add Webhook</h3>
+                <button class="close-btn" id="closeWebhookModal">&times;</button>
+            </div>
+            <form id="webhookForm">
+                <div class="form-group">
+                    <label for="webhookName">Name *</label>
+                    <input type="text" id="webhookName" required>
+                </div>
+                <div class="form-group">
+                    <label for="webhookUrl">URL *</label>
+                    <input type="url" id="webhookUrl" required placeholder="https://example.com/webhook">
+                </div>
+                <div class="form-group">
+                    <label for="webhookEvent">Event Type *</label>
+                    <select id="webhookEvent" required>
+                        <option value="product.created">Product Created</option>
+                        <option value="product.updated">Product Updated</option>
+                        <option value="product.deleted">Product Deleted</option>
+                        <option value="import.completed">Import Completed</option>
+                        <option value="products.bulk_deleted">Bulk Delete</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="webhookEnabled" checked>
+                        Enabled
+                    </label>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelWebhookBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveWebhookBtn">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-content small">
+            <div class="modal-header">
+                <h3>Confirm Action</h3>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage"></p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="cancelConfirmBtn">Cancel</button>
+                <button class="btn btn-danger" id="confirmActionBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer"></div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
+
