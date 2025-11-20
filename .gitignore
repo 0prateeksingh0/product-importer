@@ -48,11 +48,21 @@ nohup.out
 # Uploads
 uploads/
 *.csv
+products.csv
 
 # Logs
 *.log
+celery.log
+server.log
+nohup.out
 
 # OS
 .DS_Store
 Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
 
