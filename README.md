@@ -394,8 +394,4 @@ Created by [Your Name] using AI-assisted development with Claude (Anthropic) and
 
 ---
 
-**Questions or Issues?**  
-Contact: [your.email@example.com]
-
-**Live Demo**: [deployment-url-here]
 
