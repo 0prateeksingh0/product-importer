@@ -125,14 +125,16 @@ A high-performance web application for importing and managing products from CSV 
 
 **CSV Format:**
 ```csv
-sku,name,description,price
-SKU001,Product Name,Product description,29.99
+name,sku,description,price
+Product Name,SKU001,Product description,29.99
 ```
 
-**Required fields**: `sku`, `name`  
+**Required fields**: `name`, `sku`  
 **Optional fields**: `description`, `price`
 
-A sample CSV file (`sample_products.csv`) is included for testing.
+**Note:** Column order doesn't matter - the app reads columns by name, not position.
+
+A sample CSV file (`sample.csv`) is included for testing.
 
 ### Managing Products
 
